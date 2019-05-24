@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorDark"
+    tools:context=".AlbumItem"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/tool_bar_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@color/colorDark30"
+        android:paddingLeft="@dimen/padding"
+        android:paddingTop="@dimen/padding"
+        android:paddingRight="@dimen/padding">
+
+        <ImageButton
+            android:id="@+id/button_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@null"
+            android:padding="@dimen/padding"
+            android:src="@drawable/ic_chevron_left_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/button_option"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@null"
+            android:padding="@dimen/padding"
+            android:src="@drawable/ic_more_vert_black_24dp" />
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/grid_view_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
+        android:layout_margin="1dp"
+        android:clickable="true"
+        android:columnWidth="80dp"
+        android:drawSelectorOnTop="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth" />
+
+</LinearLayout>

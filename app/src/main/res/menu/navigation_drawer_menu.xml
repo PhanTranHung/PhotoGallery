@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_Accounts"
+            android:icon="@drawable/ic_account"
+            android:title="Accounts"/>
+
+    </group>
+
+    <item android:id="@+id/nav_settings"
+    android:icon="@drawable/ic_setting"
+    android:title="Settings"/>
+
+    <item android:id="@+id/nav_about"
+        android:icon="@drawable/ic_about_app"
+        android:title="About app"/>
+
+</menu>
