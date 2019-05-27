@@ -1,5 +1,6 @@
 package com.example.photogallery.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,9 +8,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.photogallery.Adapters.GridViewAdapterForOnlineFragment;
+import com.example.photogallery.DetailsActivity;
 import com.example.photogallery.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,6 +33,7 @@ public class OnlineFragment extends Fragment {
     ArrayList<String> dowloadUrlImage;
 
     String CHILD_NAME = "image";
+    String ACTION_CAN_UPLOAD = "NO";
 
     public OnlineFragment() {
         // Required empty public constructor
@@ -55,6 +59,17 @@ public class OnlineFragment extends Fragment {
 
         gridView = view.findViewById(R.id.grid_view_photo);
         gridView.setAdapter(gridViewAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(getContext(), DetailsActivity.class);
+                intent.putExtra("listFiles", dowloadUrlImage);
+                intent.putExtra("position", position);
+                intent.setAction(ACTION_CAN_UPLOAD);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

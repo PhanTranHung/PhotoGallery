@@ -43,6 +43,7 @@ public class DetailsActivity<V> extends AppCompatActivity {
     int position;
 
     String CHILD_IMAGE = "image";
+    String ACTION_CAN_UPLOAD = "OK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +54,15 @@ public class DetailsActivity<V> extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         listElements = (ArrayList) getIntent().getSerializableExtra("listFiles");
-
         position = getIntent().getIntExtra("position", 0);
+
         findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
         bin();
-        mustBeingTheFile(listElements);
+        canUploaded(getIntent().getAction());
     }
 
-    private void mustBeingTheFile(ArrayList arrayList){
-        Log.i("ssssPathToSting", ((File) arrayList.get(0)).toString());
-        if (!arrayList.contains(File.class))
+    private void canUploaded(String action){
+        if (action != ACTION_CAN_UPLOAD)
             hidentBtnUpload();
     }
 
@@ -71,13 +71,7 @@ public class DetailsActivity<V> extends AppCompatActivity {
     }
 
     void bin(){
-        backBtn = findViewById(R.id.button_back);
-        optionBtn = findViewById(R.id.button_option);
-        editBtn = findViewById(R.id.button_edit);
-        shareBtn = findViewById(R.id.button_share);
-        deleteBtn = findViewById(R.id.button_delete);
-        tabImage = findViewById(R.id.tab_images);
-        uploadBtn = findViewById(R.id.imageButtonUpload);
+        mapViews();
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,6 +104,16 @@ public class DetailsActivity<V> extends AppCompatActivity {
                 uploadImgToFirebase(listElements.get(tabImage.getCurrentItem()).toString());
             }
         });
+    }
+
+    void mapViews(){
+        backBtn = findViewById(R.id.button_back);
+        optionBtn = findViewById(R.id.button_option);
+        editBtn = findViewById(R.id.button_edit);
+        shareBtn = findViewById(R.id.button_share);
+        deleteBtn = findViewById(R.id.button_delete);
+        tabImage = findViewById(R.id.tab_images);
+        uploadBtn = findViewById(R.id.imageButtonUpload);
     }
 
     @Override

@@ -26,6 +26,8 @@ public class PhotosFragment extends Fragment {
     ImagesAdapter imagesAdapter;
     RecyclerView recyclerView;
 
+    String ACTION_CAN_UPLOAD = "OK";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +53,11 @@ public class PhotosFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                File file= (File) parent.getItemAtPosition(position);
 
                 Intent intent = new Intent(getContext(), DetailsActivity.class);
                 intent.putExtra("listFiles", listFile);
                 intent.putExtra("position", position);
+                intent.setAction(ACTION_CAN_UPLOAD);
                 startActivity(intent);
             }
         });

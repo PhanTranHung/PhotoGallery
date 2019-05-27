@@ -4,12 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.photogallery.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileReader;
@@ -50,14 +52,22 @@ public class TabImagesAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        View imageLayout = inflater.inflate(R.layout.fragment_sliding_images, container, false);
+        View view = inflater.inflate(R.layout.fragment_sliding_images, container, false);
 
+        assert view != null;
+        final ImageView imageView = view.findViewById(R.id.image);
+        container.addView(view);
 
-        assert imageLayout != null;
-        final ImageView imageView = imageLayout.findViewById(R.id.image);
-        imageView.setImageURI(UriC.getUri(listElements.get(position)));
-        container.addView(imageLayout);
-        return imageLayout;
+        Uri uriImg = Uri.parse(listElements.get(position).toString());
+        if  (uriImg.isRelative() && !uriImg.isAbsolute())
+            imageView.setImageURI(Uri.parse(listElements.get(position).toString()));
+        else
+            Picasso.get().load(Uri.parse(listElements.get(position).toString()))
+            .placeholder(R.drawable.blankimg)
+            .error(R.drawable.logo)
+            .into(imageView);
+
+        return view;
     }
 
     protected void unbindDrawables(View view) {
