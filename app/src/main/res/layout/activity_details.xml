@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -9,7 +10,9 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/tab_images"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -36,6 +39,15 @@
             android:background="@null"
             android:padding="@dimen/padding"
             android:src="@drawable/ic_chevron_left_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/imageButtonUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/button_option"
+            android:background="@null"
+            android:padding="@dimen/padding"
+            android:src="@drawable/ic_upload_picture" />
 
         <ImageButton
             android:id="@+id/button_option"

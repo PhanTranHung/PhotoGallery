@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,24 +12,26 @@ import android.widget.ImageView;
 import com.example.photogallery.R;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 
 public class TabImagesAdapter extends PagerAdapter {
 
     Context context;
-    ArrayList<File> listFiles;
+    ArrayList listElements;
     int position;
     LayoutInflater inflater;
 
-    public TabImagesAdapter(Context context, ArrayList<File> listFiles) {
+    public TabImagesAdapter(Context context, ArrayList listFiles) {
         this.context = context;
-        this.listFiles = listFiles;
+        this.listElements = listFiles;
         inflater = LayoutInflater.from(context);
     }
 
+
     @Override
     public int getCount() {
-        return listFiles.size();
+        return listElements.size();
     }
 
     @Override
@@ -51,9 +52,10 @@ public class TabImagesAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View imageLayout = inflater.inflate(R.layout.fragment_sliding_images, container, false);
 
+
         assert imageLayout != null;
         final ImageView imageView = imageLayout.findViewById(R.id.image);
-        imageView.setImageURI(Uri.fromFile(listFiles.get(position).getAbsoluteFile()));
+        imageView.setImageURI(UriC.getUri(listElements.get(position)));
         container.addView(imageLayout);
         return imageLayout;
     }

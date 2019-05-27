@@ -2,32 +2,30 @@ package com.example.photogallery.Adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.example.photogallery.Loading.LoadingImage;
 import com.example.photogallery.R;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class GridViewAdapter extends BaseAdapter {
+public class GridViewAdapterForOnlineFragment extends BaseAdapter {
 
     int layout;
-    ArrayList<Bitmap> listImages;
-    ArrayList<File> listFile;
+    ArrayList<RequestCreator> listImages;
+    ArrayList<String> listLinkImgs;
     LayoutInflater mInflater;
 
-    public GridViewAdapter(Context context, int layout, ArrayList<File> listFile) {
+    public GridViewAdapterForOnlineFragment(Context context, int layout, ArrayList<String> listLinkImgs) {
         this.layout = layout;
         this.listImages = new ArrayList<>();
-        this.listFile = listFile;
+        this.listLinkImgs = listLinkImgs;
         this.mInflater = LayoutInflater.from(context);
     }
 
@@ -37,12 +35,12 @@ public class GridViewAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return listFile.size();
+        return listLinkImgs.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return listFile.get(position);
+        return listLinkImgs.get(position);
     }
 
 
@@ -62,30 +60,20 @@ public class GridViewAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.imageItemView = convertView.findViewById(R.id.img_item);
             convertView.setTag(viewHolder);
-        } else
+        } else {
             viewHolder = (ViewHolder) convertView.getTag();
-
-//        try {
-//            listImages.get(position);
-//        } catch (Exception e){
-//            try {
-//                listImages.add(position, Picasso.get()
-//                                                .load(listFile.get(position))
-//                                                .placeholder(R.drawable.blankimg)
-//                                                .error(R.drawable.logo)
-//                                                .get());
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
-//            viewHolder.imageItemView.setImageBitmap(listImages.get(position));
-//        }
+        }
 
         try {
-            viewHolder.imageItemView.setImageBitmap(listImages.get(position));
+            listImages.get(position).into(viewHolder.imageItemView);
         } catch (Exception e){
-            viewHolder.imageItemView.setImageResource(R.drawable.blankimg);
-            new LoadingImage(listImages, viewHolder.imageItemView).execute(listFile.get(position), position);
-            e.getStackTrace();
+            RequestCreator requestCreator = Picasso.get()
+                    .load(listLinkImgs.get(position))
+                    .placeholder(R.drawable.blankimg)
+                    .error(R.drawable.logo);
+            requestCreator.into(viewHolder.imageItemView);
+
+            listImages.add(position, requestCreator);
         }
 
         return convertView;
