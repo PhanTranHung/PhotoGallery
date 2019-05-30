@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Firebase"></activity>
+        <activity android:name=".ImageInfomation"></activity>
+        <activity android:name=".Firebase" />
         <activity
             android:name=".Loading.LoadingActivity"
             android:noHistory="true"

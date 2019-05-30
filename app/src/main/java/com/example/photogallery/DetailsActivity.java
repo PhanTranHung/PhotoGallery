@@ -1,8 +1,10 @@
 package com.example.photogallery;
 
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,7 +13,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.photogallery.Adapters.TabImagesAdapter;
@@ -28,23 +32,37 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class DetailsActivity<V> extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity {
 
     ArrayList listElements;
     RelativeLayout toolBarTop;
     LinearLayout toolBarBottom;
     ImageButton backBtn, optionBtn, editBtn, shareBtn, deleteBtn, uploadBtn;
     ViewPager tabImage;
+    TextView coordinate;
+    ProgressBar progressBarUpload;
 
     private StorageReference storageReference;
     private DatabaseReference mDatabase;
 
     boolean isVisible = true;
     int position;
+    float xCoordinateActionDown = 0, yCoordinateActionDown = 0;
+
+    // Minimal x and y axis swipe distance.
+    private static int MIN_SWIPE_DISTANCE_X = 100;
+    private static int MIN_SWIPE_DISTANCE_Y = 100;
+
+    private static int MIN_SWIPE_DISTANCE_FOR_CLICK = 4;
+
+    // Maximal x and y axis swipe distance.
+    private static int MAX_SWIPE_DISTANCE_X = 1000;
+    private static int MAX_SWIPE_DISTANCE_Y = 1000;
 
     String CHILD_IMAGE = "image";
     String ACTION_CAN_UPLOAD = "OK";
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +88,7 @@ public class DetailsActivity<V> extends AppCompatActivity {
         uploadBtn.setVisibility(View.INVISIBLE);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     void bin(){
         mapViews();
 
@@ -89,21 +108,57 @@ public class DetailsActivity<V> extends AppCompatActivity {
 
         tabImage.setAdapter(new TabImagesAdapter(this, listElements));
         tabImage.setCurrentItem(position, true);
-
-        tabImage.setOnClickListener(new View.OnClickListener() {
+        tabImage.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                setVisibleToolBars();
-                Toast.makeText(getBaseContext(), "click", Toast.LENGTH_SHORT).show();
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        setCoordinateActionDown(event);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        detectAction(event);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        coordinate.setText("x:" + event.getX() + "  y:" + event.getY());
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        Toast.makeText(getBaseContext(), "ACTION_CANCEL", Toast.LENGTH_SHORT).show();
+                        break;
+                    case MotionEvent.ACTION_OUTSIDE:
+                        Toast.makeText(getBaseContext(), "ACTION_OUTSIDE", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return false;
             }
         });
 
         uploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnUploadClicked();
                 uploadImgToFirebase(listElements.get(tabImage.getCurrentItem()).toString());
             }
         });
+    }
+
+    void setCoordinateActionDown(MotionEvent event){
+        xCoordinateActionDown = event.getX();
+        yCoordinateActionDown = event.getY();
+    }
+
+    void detectAction(MotionEvent event){
+
+        float deltaX = event.getX() - xCoordinateActionDown;
+        float deltaY = event.getY() - yCoordinateActionDown;
+
+        float deltaXAbs = Math.abs(deltaX);
+        float deltaYAbs = Math.abs(deltaY);
+
+        if (deltaXAbs < MIN_SWIPE_DISTANCE_FOR_CLICK) setVisibleToolBars();
+        else if (deltaXAbs < MIN_SWIPE_DISTANCE_X && deltaYAbs >= MIN_SWIPE_DISTANCE_Y)
+            if (deltaY > 0) finish();
+            else Toast.makeText(this, "Swipe to up", Toast.LENGTH_SHORT).show();
     }
 
     void mapViews(){
@@ -114,22 +169,23 @@ public class DetailsActivity<V> extends AppCompatActivity {
         deleteBtn = findViewById(R.id.button_delete);
         tabImage = findViewById(R.id.tab_images);
         uploadBtn = findViewById(R.id.imageButtonUpload);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        Toast.makeText(getBaseContext(), "click", Toast.LENGTH_SHORT).show();
-        return super.onTouchEvent(event);
+        toolBarTop = findViewById(R.id.tool_bar_top);
+        toolBarBottom = findViewById(R.id.tool_bar_bottom);
+        coordinate = findViewById(R.id.text_view_coordinate);
+        progressBarUpload = findViewById(R.id.progress_bar_upload);
     }
 
     void setVisibleToolBars(){
         if(isVisible){
             toolBarTop.setVisibility(View.INVISIBLE);
             toolBarBottom.setVisibility(View.INVISIBLE);
+            isVisible = false;
         } else {
             toolBarTop.setVisibility(View.VISIBLE);
             toolBarBottom.setVisibility(View.VISIBLE);
+            isVisible = true;
         }
+
     }
 
     void uploadImgToFirebase(String path){
@@ -160,7 +216,7 @@ public class DetailsActivity<V> extends AppCompatActivity {
                                 if (databaseError != null){
                                     Toast.makeText(DetailsActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(DetailsActivity.this, "Successfully", Toast.LENGTH_SHORT).show();
+                                    upLoadSuccessfully();
                                 }
                             }
                         });
@@ -168,5 +224,16 @@ public class DetailsActivity<V> extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    void btnUploadClicked(){
+        uploadBtn.setVisibility(View.INVISIBLE);
+        progressBarUpload .setVisibility(View.VISIBLE);
+    }
+
+    void upLoadSuccessfully(){
+        Toast.makeText(DetailsActivity.this, "Successfully", Toast.LENGTH_SHORT).show();
+        progressBarUpload .setVisibility(View.INVISIBLE);
+        uploadBtn.setVisibility(View.VISIBLE);
     }
 }
